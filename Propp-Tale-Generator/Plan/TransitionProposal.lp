@@ -8,6 +8,7 @@ state(0..n-1).
 %                                    FLUENTS
 %===============================================================================
 fluent(actorAt(A,L)) :- actor(A), location(L).
+fluent(have(A,O)) :- actor(A), object(O).
 fluent(captured(A1,A2)) :- actor(A1), actor(A2).
 fluent(saw(Actor,Action)) :- actor(Actor), action(Action).
 
