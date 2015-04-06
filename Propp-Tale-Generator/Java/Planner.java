@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 public class Planner {
 
     static File clingo, domain;
-    static String[] names = new String[]{"Absentation.dl", "ViolationOfInterdictionn.dl", "Transition-Proposal.dl", "FirstFunctionOfDonor.dl", "Guidance.dl",
-        "Struggle.dl", "Branding.dl", "Victory.dl", "Return.dl", "UnfoundedClaims.dl", "Recognition.dl", "Wedding.dl"};
+    static String[] names = new String[]{"Absentation.lp", "ViolationOfInterdictionn.lp", "Transition-Proposal.lp", "FirstFunctionOfDonor.lp", "Guidance.lp",
+        "Struggle.lp", "Branding.lp", "Victory.lp", "Return.lp", "UnfoundedClaims.lp", "Recognition.lp", "Wedding.lp"};
 
     public static void parsePlan(String action, TreeMap<Integer, String> sentences) {
         StringBuilder sentence = new StringBuilder();
