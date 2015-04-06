@@ -10,7 +10,7 @@ state(0..n-1).
 fluent(actorAt(A,L)) :- actor(A), location(L).
 fluent(have(A,O)) :- actor(A), object(O).
 fluent(captured(A1,A2)) :- actor(A1), actor(A2).
-fluent(saw(Actor,Action)) :- actor(Actor), action(Action).
+fluent(saw(A,Action)) :- actor(A), action(Action).
 
 
 %===============================================================================
