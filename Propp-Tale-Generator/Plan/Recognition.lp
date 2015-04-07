@@ -59,8 +59,6 @@ action(show(A1,A2,O)) :- actor(A1), actor(A2), sObject(O).
 %===============================================================================
 -holds(N+1, actorAt(A,L)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
  holds(N+1, actorAt(A,L1)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
--holds(N+1, have(A1,O)) :- occurs(N, give(A1,A2,O)), state(N).
- holds(N+1, have(A2,O)) :- occurs(N, give(A1,A2,O)), state(N).
 
 
 %===============================================================================
