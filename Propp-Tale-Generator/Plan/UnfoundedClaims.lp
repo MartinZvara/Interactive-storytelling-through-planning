@@ -51,8 +51,6 @@ sAction(tell_to(A1,A2,Action)) :- actor(A1), actor(A2), action(Action). %koli za
 %                                 EXECUTABILITY
 %===============================================================================
 :- holds(N,actorAt(A,L)), occurs(N,move_to(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
-:- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,give(A1,A2,O)), L1!=L2.
-:- holds(N,actorAt(A1,L)), holds(N,actorAt(A2,L)), occurs(N,give(A1,A2,O)), not holds(N,have(A1,O)).
 :- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,tell_to(A1,A2,Act)), L1!=L2.
 :- holds(N,actorAt(A1,L)), holds(N,actorAt(A2,L)), occurs(N,tell_to(A1,A2,Act)), not holds(N, saw(A1, Act)), not fHero(A1). 
 :- occurs(N, capture(A1,A2)).
@@ -64,8 +62,6 @@ sAction(tell_to(A1,A2,Action)) :- actor(A1), actor(A2), action(Action). %koli za
 %===============================================================================
 -holds(N+1, actorAt(A,L)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
  holds(N+1, actorAt(A,L1)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
--holds(N+1, have(A1,O)) :- occurs(N, give(A1,A2,O)), state(N).
- holds(N+1, have(A2,O)) :- occurs(N, give(A1,A2,O)), state(N).
  holds(N+1, saw(A2, Act)) :- occurs(N, tell_to(A1,A2,Act)), state(N).
 
 
