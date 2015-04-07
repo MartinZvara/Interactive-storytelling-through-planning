@@ -139,7 +139,7 @@ public class Planner {
     /**
      * This method generate plan according given non complete plan.  
      *
-     * @param plan - non complete plan
+     * @param plan - non complete logic program
      * @param initially - initial fluents
      * @param counter - length of plan
      * @return updated plan
