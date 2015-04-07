@@ -47,10 +47,9 @@ action(show(A1,A2,O)) :- actor(A1), actor(A2), sObject(O).
 %                                 EXECUTABILITY
 %===============================================================================
 :- holds(N,actorAt(A,L)), occurs(N,move_to(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
-:- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,give(A1,A2,O)), L1!=L2.
-:- holds(N,actorAt(A1,L)), holds(N,actorAt(A2,L)), occurs(N,give(A1,A2,O)), not holds(N,have(A1,O)).
+:- holds(captured(A2,A1)),occurs(N,move_to(A1,L1)).
 :- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,show(A1,A2,O)), L1!=L2.
-:- holds(N,actorAt(A1,L)), holds(N,actorAt(A2,L)), occurs(N,show(A1,A2,O)), not holds(N,have(A1,O)).
+:- not holds(N,have(A1,O)), occurs(N,show(A1,A2,O)).
 :- occurs(N, capture(A1,A2)).
 :- occurs(N, defeat(A1,A2)).
 
