@@ -20,8 +20,6 @@ fluent(have(A,O)) :- actor(A), object(O).
 %===============================================================================
 action(move_to(A,L)) :- actor(A), location(L).
 action(give(A1,A2,O)) :- actor(A1), actor(A2), object(O). 
-action(capture(A1,A2)) :- actor(A1), actor(A2).
-action(defeat(A1,A2)) :- actor(A1), actor(A2).
 
 
 %===============================================================================
@@ -50,8 +48,6 @@ action(defeat(A1,A2)) :- actor(A1), actor(A2).
 :- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,give(A1,A2,O)), L1!=L2.
 :- not holds(N,have(A1,O)), occurs(N,give(A1,A2,O)).
 :- occurs(N,give(A1,A2,O)), sObject(O).
-:- occurs(N, capture(A1,A2)).
-:- occurs(N, defeat(A1,A2)).
 
 
 %===============================================================================
@@ -61,7 +57,6 @@ action(defeat(A1,A2)) :- actor(A1), actor(A2).
  holds(N+1, actorAt(A,L1)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
 -holds(N+1, have(A1,O)) :- occurs(N, give(A1,A2,O)), state(N).
  holds(N+1, have(A2,O)) :- occurs(N, give(A1,A2,O)), state(N).
- holds(N+1, saw(A2, Act)) :- occurs(N, tell(A1,A2,Act)), state(N).
 
 
 %===============================================================================
