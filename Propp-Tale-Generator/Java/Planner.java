@@ -197,9 +197,9 @@ public class Planner {
     }
 
     static void init() {
-        names = new String[][]{{"AbsentationA.dl","AbsentationB.dl"}, {"ViolationOfInterdictionn.dl"}, {"Transition-Proposal.dl"},
-                                {"FirstFunctionOfDonor.dl"}, {"Guidance.dl"}, {"Struggle.dl"}, {"Branding.dl"}, 
-                                {"Victory.dl"}, {"Return.dl"}, {"UnfoundedClaims.dl"}, {"Recognition.dl"}, {"WeddingA.dl", "WeddingB.dl"}};
+        names = new String[][]{{"AbsentationA.lp","AbsentationB.lp"}, {"ViolationOfInterdictionn.lp"}, {"Transition-Proposal.lp"},
+                                {"FirstFunctionOfDonor.lp"}, {"Guidance.lp"}, {"Struggle.lp"}, {"Branding.lp"}, 
+                                {"Victory.lp"}, {"Return.lp"}, {"UnfoundedClaims.lp"}, {"Recognition.lp"}, {"WeddingA.lp", "WeddingB.lp"}};
         verbModifier = new HashMap<>();
         verbModifier.put("say", "to");
         verbModifier.put("move", "to");
