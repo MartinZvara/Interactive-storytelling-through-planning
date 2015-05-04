@@ -17,14 +17,12 @@ fluent(have(A,O)) :- actor(A), object(O).
 %===============================================================================
 %                                    ACTIONS
 %===============================================================================
-action(move_to(A,L)) :- actor(A), location(L).
-action(capture(A1,A2)) :- actor(A1), actor(A2). 
+action(move(A,L)) :- actor(A), location(L).
 
 
 %===============================================================================
 %                                 INITIAL STATE
 %===============================================================================
-%holds(0, have(A,O)) :- actor(A), object(O), on(A,O).
 
 
 %===============================================================================
@@ -44,16 +42,15 @@ action(capture(A1,A2)) :- actor(A1), actor(A2).
 %===============================================================================
 %                                 EXECUTABILITY
 %===============================================================================
-:- holds(N,actorAt(A,L)), occurs(N, move_to(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
-:- holds(N,actorAt(A,L)), occurs(N, move_to(A,L1)), holds(N, captured(A1,A)).
-:- occurs(N, capture(A1,A2)).
+:- holds(N,actorAt(A,L)), occurs(N, move(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
+:- holds(N,actorAt(A,L)), occurs(N, move(A,L1)), holds(N, captured(A1,A)).
 
 
 %===============================================================================
 %                              ACTIONS DESCRIPTION
 %===============================================================================
--holds(N+1, actorAt(A,L)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
- holds(N+1, actorAt(A,L1)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
+-holds(N+1, actorAt(A,L)) :- occurs(N, move(A,L1)), holds(N,actorAt(A,L)), state(N).
+ holds(N+1, actorAt(A,L1)) :- occurs(N, move(A,L1)), holds(N,actorAt(A,L)), state(N).
 
 
 %===============================================================================
