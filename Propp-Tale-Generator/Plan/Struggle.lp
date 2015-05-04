@@ -17,9 +17,8 @@ fluent(have(A,O)) :- actor(A), object(O).
 %===============================================================================
 %                                    ACTIONS
 %===============================================================================
-action(move_to(A,L)) :- actor(A), location(L).
-action(fight_with(A1,A2)) :- actor(A1), actor(A2).
-action(capture(A1,A2)) :- actor(A1), actor(A2). 
+action(move(A,L)) :- actor(A), location(L).
+action(fight(A1,A2)) :- actor(A1), actor(A2).
 
 
 %===============================================================================
@@ -44,19 +43,19 @@ action(capture(A1,A2)) :- actor(A1), actor(A2).
 %===============================================================================
 %                                 EXECUTABILITY
 %===============================================================================
-:- holds(N,actorAt(A,L)), occurs(N,move_to(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
-:- holds(N,actorAt(A,L)), occurs(N,move_to(A,L1)), holds(N,captured(A1,A)).
-:- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,fight_with(A1,A2)), L1!=L2.
-:- holds(N,inBattle(A1,A2)), occurs(N,fight_with(A1,A2)).  
+:- holds(N,actorAt(A,L)), occurs(N,move(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
+:- holds(N,actorAt(A,L)), occurs(N,move(A,L1)), holds(N,captured(A1,A)).
+:- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,fight(A1,A2)), L1!=L2.
+:- holds(N,inBattle(A1,A2)), occurs(N,fight(A1,A2)).  
 :- occurs(N,capture(A1,A2)).
 
 
 %===============================================================================
 %                              ACTIONS DESCRIPTION
 %===============================================================================
--holds(N+1, actorAt(A,L)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
- holds(N+1, actorAt(A,L1)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
- holds(N+1, inBattle(A1,A2)) :- occurs(N, fight_with(A1,A2)), state(N).
+-holds(N+1, actorAt(A,L)) :- occurs(N, move(A,L1)), holds(N,actorAt(A,L)), state(N).
+ holds(N+1, actorAt(A,L1)) :- occurs(N, move(A,L1)), holds(N,actorAt(A,L)), state(N).
+ holds(N+1, inBattle(A1,A2)) :- occurs(N, fight(A1,A2)), state(N).
 
 
 %===============================================================================
