@@ -16,9 +16,9 @@ fluent(saw(A,Action)) :- actor(A), action(Action).
 %===============================================================================
 %                                    ACTIONS
 %===============================================================================
-action(move_to(A,L)) :- actor(A), location(L).
+action(move(A,L)) :- actor(A), location(L).
 action(capture(A1,A2)) :- actor(A1), actor(A2).
-sAction(tell_to(A1,A2,Action)) :- actor(A1), actor(A2), action(Action). 
+sAction(say(A1,A2,Action)) :- actor(A1), actor(A2), action(Action). 
 
 
 %===============================================================================
@@ -47,19 +47,19 @@ sAction(tell_to(A1,A2,Action)) :- actor(A1), actor(A2), action(Action).
 %===============================================================================
 %                                 EXECUTABILITY
 %===============================================================================
-:- holds(N,actorAt(A,L)), occurs(N, move_to(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
-:- holds(N, captured(A1,A)), occurs(N, move_to(A,L1)).
+:- holds(N,actorAt(A,L)), occurs(N, move(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
+:- holds(N, captured(A1,A)), occurs(N, move(A,L1)).
 :- occurs(N, capture(A1,A2)).
-:- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,tell_to(A1,A2,Act)), L1!=L2.
-:- holds(N,actorAt(A1,L)), holds(N,actorAt(A2,L)), occurs(N,tell_to(A1,A2,Act)), not holds(N, saw(A1, Act)). 
+:- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,say(A1,A2,Act)), L1!=L2.
+:- holds(N,actorAt(A1,L)), holds(N,actorAt(A2,L)), occurs(N,say(A1,A2,Act)), not holds(N, saw(A1, Act)). 
 
 
 %===============================================================================
 %                              ACTIONS DESCRIPTION
 %===============================================================================
--holds(N+1, actorAt(A,L)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
- holds(N+1, actorAt(A,L1)) :- occurs(N, move_to(A,L1)), holds(N,actorAt(A,L)), state(N).
- holds(N+1, saw(A2, Act)) :- occurs(N, tell_to(A1,A2,Act)), state(N).
+-holds(N+1, actorAt(A,L)) :- occurs(N, move(A,L1)), holds(N,actorAt(A,L)), state(N).
+ holds(N+1, actorAt(A,L1)) :- occurs(N, move(A,L1)), holds(N,actorAt(A,L)), state(N).
+ holds(N+1, saw(A2, Act)) :- occurs(N, say(A1,A2,Act)), state(N).
 
 
 %===============================================================================
