@@ -5,11 +5,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import simplenlg.framework.*;
+import simplenlg.lexicon.*;
+import simplenlg.realiser.english.*;
+import simplenlg.phrasespec.*;
+import simplenlg.features.*;
 
 /*
  * To change this template, choose Tools | Templates
@@ -22,11 +28,14 @@ import java.util.logging.Logger;
 public class Planner {
 
     static File clingo, domain;
-    static String[] names = new String[]{"Absentation.lp", "ViolationOfInterdictionn.lp", "Transition-Proposal.lp", "FirstFunctionOfDonor.lp", "Guidance.lp",
-        "Struggle.lp", "Branding.lp", "Victory.lp", "Return.lp", "UnfoundedClaims.lp", "Recognition.lp", "Wedding.lp"};
+    static String[][] names;
+    static Lexicon lexicon;
+    static NLGFactory nlgFactory;
+    static Realiser realiser;
+    static HashMap<String, String> verbModifier;
 
     public static void parsePlan(String action, TreeMap<Integer, String> sentences) {
-        StringBuilder sentence = new StringBuilder();
+        ArrayList<String> sentence = new ArrayList<>();
         StringBuilder word = new StringBuilder();
         int i = 0, begin = 9, end = 9;
         while (end < action.length() - 1) {
@@ -35,42 +44,49 @@ public class Planner {
             }
             if (i == 0) {
                 word.append(action.subSequence(begin, end));
-                word.append(" ");
                 i++;
             } else if (i == 1) {
-                sentence.append(action.subSequence(begin, end));
-                sentence.append(" ");
-                sentence.append(word);
+                sentence.add(action.subSequence(begin, end).toString());
+                sentence.add(word.toString());
+                word.delete(0, word.length());
                 i++;
             } else if (i == 2) {
-                sentence.append(action.subSequence(begin, end));
-                sentence.append(" ");
-                if (word.toString().contains("tell")) {
-                    sentence.append("that ");
-                }
-                word.delete(0, word.length());
+                sentence.add(action.subSequence(begin, end).toString());
                 i = 0;
             }
-            begin = end + 1;
             end++;
-            if (end >= action.length() - 1) {
-                if (word.length() > 0) {
-                    sentence.append(word);
-                    word.delete(0, word.length());
+            begin = end;
+        }
+        SPhraseSpec p = nlgFactory.createClause();
+        for (int j = 0; j < sentence.size(); j++) {
+            if (j < 3) {
+                if (j == 1) {
+                    VPPhraseSpec verb = nlgFactory.createVerbPhrase(sentence.get(j));
+                    if (verbModifier.containsKey(sentence.get(j))) {
+                        verb.addPostModifier(verbModifier.get(sentence.get(j)));
+                    }
+                    p.setVerb(verb);
+                } else if (j == 0) {
+                    p.setSubject(sentence.get(j));
+                } else if (j == 2) {
+                    NPPhraseSpec obj = nlgFactory.createNounPhrase(sentence.get(j));
+                    if (sentence.size() == 4) {
+                        obj.addComplement(sentence.get(++j));
+                    }
+                    p.setObject(obj);
                 }
+            } else {
+                SPhraseSpec q = nlgFactory.createClause(sentence.get(j), sentence.get(j + 1), sentence.get(j + 2));
+                q.setFeature(Feature.COMPLEMENTISER, "that");
+                q.setFeature(Feature.TENSE, Tense.PAST);
+                p.addComplement(q);
+                break;
             }
         }
-        sentences.put(action.charAt(7) - 48, sentence.toString());
-        //System.out.println(sentence.toString());
+
+        sentences.put(action.charAt(7) - 48, realiser.realiseSentence(p));
     }
 
-    /**
-     * This method run given plan with domain in clingo and find appertaining actions.  
-     *
-     * @param plan - 
-     * @param domain -
-     * @return ArrayList of last holds of given plan.
-     */
     public static ArrayList<String> findPlan(File domain, File plan) {
         ArrayList<String> result = new ArrayList<>();
         ArrayList<TreeMap<Integer, ArrayList<String>>> fluents = new ArrayList<>();
@@ -87,7 +103,6 @@ public class Planner {
             int state;
             while (s.hasNextLine()) {
                 line = s.next();
-                //System.out.println(line);
                 if (line.equals("SATISFIABLE") || line.equals("UNSATISFIABLE")) {
                     break;
                 }
@@ -96,10 +111,8 @@ public class Planner {
                     fluents.add(new TreeMap<Integer, ArrayList<String>>());
                     pCounter++;
                 }
-                //debug
                 if (line.contains("occurs")) {
                     //System.out.println(line); //- actions
-                    //parse plan
                     occurs.get(pCounter).add(line);
                 }
                 if (line.contains("holds")) {
@@ -116,8 +129,6 @@ public class Planner {
             if (pCounter == -1) { //ziadny plan
                 return result;
             } else {
-            //actions.add(occurs);
-                //System.out.println(fluents.get(fluents.lastKey()));
                 pCounter = rnd.nextInt(fluents.size());
                 for (String action : occurs.get(pCounter)) {
                     parsePlan(action, sentences);
@@ -137,9 +148,9 @@ public class Planner {
     }
 
     /**
-     * This method generate plan according given non complete plan.  
+     * This method generate plan according given non complete plan.
      *
-     * @param plan - non complete logic program
+     * @param plan - non complete plan
      * @param initially - initial fluents
      * @param counter - length of plan
      * @return updated plan
@@ -171,28 +182,49 @@ public class Planner {
                 s.close();
                 writer.close();
                 return ePlan;
+                //findPlan(domain, ePlan, result);
+
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Planner.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(Planner.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
+            //findPlan(domain, plan, result);
             return plan;
         }
         return null;
     }
 
-    public static void main(String[] args) {
-        clingo = new File("clingo.exe");
+    static void init() {
+        names = new String[][]{{"AbsentationA.dl","AbsentationB.dl"}, {"ViolationOfInterdictionn.dl"}, {"Transition-Proposal.dl"},
+                                {"FirstFunctionOfDonor.dl"}, {"Guidance.dl"}, {"Struggle.dl"}, {"Branding.dl"}, 
+                                {"Victory.dl"}, {"Return.dl"}, {"UnfoundedClaims.dl"}, {"Recognition.dl"}, {"WeddingA.dl", "WeddingB.dl"}};
+        verbModifier = new HashMap<>();
+        verbModifier.put("say", "to");
+        verbModifier.put("move", "to");
+        verbModifier.put("give", "to");
+        verbModifier.put("fight", "with");
+        clingo = new File("clingo1.exe");
         domain = new File("domain.dl");
+        lexicon = Lexicon.getDefaultLexicon();
+        nlgFactory = new NLGFactory(lexicon);
+        realiser = new Realiser(lexicon);
+
+    }
+
+    public static void main(String[] args) {
+        init();
         ArrayList<ArrayList<String>> fluents = new ArrayList<>();
         fluents.add(new ArrayList<String>());
+        Random r = new Random();
 
         for (int i = 0; i < names.length; i++) {
             int j = 0;
             fluents.add(new ArrayList<String>());
             while (fluents.get(i + 1).isEmpty()) {
-                fluents.get(i + 1).addAll(findPlan(domain, generatePlan(new File(names[i]), fluents.get(i), j++)));
+                fluents.get(i + 1).addAll(findPlan(domain, generatePlan(new File(names[i][r.nextInt(names[i].length)]), 
+                        fluents.get(i), j++)));
             }
         }
     }
