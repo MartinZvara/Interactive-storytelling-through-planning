@@ -57,6 +57,10 @@ public class Planner {
             end++;
             begin = end;
         }
+        if(word.length()!=0){
+             sentence.add(word.toString());
+             word.delete(0, word.length());
+        }
         SPhraseSpec p = nlgFactory.createClause();
         for (int j = 0; j < sentence.size(); j++) {
             if (j < 3) {
