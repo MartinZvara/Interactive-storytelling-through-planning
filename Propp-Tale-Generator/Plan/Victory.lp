@@ -9,6 +9,7 @@ state(0..n-1).
 %===============================================================================
 fluent(actorAt(A,L)) :- actor(A), location(L).
 fluent(captured(A1,A2)) :- actor(A1), actor(A2).
+fluent(defeated(A)) :- actor(A).
 fluent(inBattle(A1,A2)) :- actor(A1), actor(A2).
 fluent(isMarked(A)) :- actor(A).
 fluent(saw(A,Action)) :- actor(A), action(Action).
@@ -20,6 +21,7 @@ fluent(have(A,O)) :- actor(A), object(O).
 %===============================================================================
 action(move(A,L)) :- actor(A), location(L).
 action(defeat(A1,A2)) :- actor(A1), actor(A2).
+action(save(A1,A2)) :- actor(A1), actor(A2).
 action(give(A1,A2,O)) :- actor(A1), actor(A2), object(O). 
 
 
@@ -51,7 +53,9 @@ action(give(A1,A2,O)) :- actor(A1), actor(A2), object(O).
 :- not holds(N,have(A1,O)), occurs(N,give(A1,A2,O)).
 :- holds(N,have(A1,O)), occurs(N,give(A1,A2,O)), sObject(O).
 :- holds(N,captured(A1,A2)), occurs(N,give(A2,A3,O)).
-:- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,defeat(A1,A2)), not holds(N,inBattle(A1,A2)).
+:- not holds(N,inBattle(A1,A2)), occurs(N,defeat(A1,A2)).
+:- not holds(N,captured(A1,A2)), occurs(N,save(A3,A2)).
+:- holds(N,captured(A1,A2)), not holds(N,defeated(A1)) occurs(N,save(A3,A2)).
 
 
 %===============================================================================
@@ -60,7 +64,8 @@ action(give(A1,A2,O)) :- actor(A1), actor(A2), object(O).
 -holds(N+1, actorAt(A,L)) :- occurs(N, move(A,L1)), holds(N,actorAt(A,L)), state(N).
  holds(N+1, actorAt(A,L1)) :- occurs(N, move(A,L1)), holds(N,actorAt(A,L)), state(N).
 -holds(N+1, inBattle(A1,A2)) :- occurs(N, defeat(A1,A2)), state(N).
--holds(N+1, captured(A1,A2)) :- occurs(N, defeat(A3,A1)), state(N), actor(A2).
+ holds(N+1, defeated(A1)) :- occurs(N, defeat(A2,A1)), state(N).
+-holds(N+1, captured(A1,A2)) :- occurs(N, save(A3,A2)), state(N), actor(A1).
 -holds(N+1, have(A1,O)) :- occurs(N, give(A1,A2,O)), state(N).
  holds(N+1, have(A2,O)) :- occurs(N, give(A1,A2,O)), state(N).
  holds(N+1, saw(A1,defeat(A1,A2))) :- occurs(N, defeat(A1,A2)), state(N).
@@ -70,6 +75,6 @@ action(give(A1,A2,O)) :- actor(A1), actor(A2), object(O).
 %===============================================================================
 %                                     GOAL
 %===============================================================================
-goal :- holds(n, actorAt(A1,L)), holds(n, actorAt(A2,L)), -holds(n, inBattle(A1,A2)), 
-        hero(A1), villain(A2), homeEnviroment(A2,L).  
+goal :- holds(n, actorAt(A1,L)), holds(n, actorAt(A2,L)), -holds(n, captured(A1,A2)), 
+        princess(A2), villain(A1), homeEnviroment(A2,L).  
 :- not goal.
