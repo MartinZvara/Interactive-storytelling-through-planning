@@ -21,8 +21,7 @@ fluent(have(A,O)) :- actor(A), object(O).
 %===============================================================================
 action(move(A,L)) :- actor(A), location(L).
 action(defeat(A1,A2)) :- actor(A1), actor(A2).
-action(save(A1,A2)) :- actor(A1), actor(A2).
-action(give(A1,A2,O)) :- actor(A1), actor(A2), object(O). 
+action(save(A1,A2)) :- actor(A1), actor(A2). 
 
 
 %===============================================================================
@@ -49,10 +48,6 @@ action(give(A1,A2,O)) :- actor(A1), actor(A2), object(O).
 %===============================================================================
 :- holds(N,actorAt(A,L)), occurs(N,move(A,L1)), not loc(L,L1), not loc(L1,L), L!=L1.
 :- holds(N,captured(A1,A)), occurs(N,move(A,L1)). 
-:- holds(N,actorAt(A1,L1)), holds(N,actorAt(A2,L2)), occurs(N,give(A1,A2,O)), L1!=L2.
-:- not holds(N,have(A1,O)), occurs(N,give(A1,A2,O)).
-:- holds(N,have(A1,O)), occurs(N,give(A1,A2,O)), sObject(O).
-:- holds(N,captured(A1,A2)), occurs(N,give(A2,A3,O)).
 :- not holds(N,inBattle(A1,A2)), occurs(N,defeat(A1,A2)).
 :- not holds(N,captured(A1,A2)), occurs(N,save(A3,A2)).
 :- holds(N,captured(A1,A2)), not holds(N,defeated(A1)) occurs(N,save(A3,A2)).
@@ -66,10 +61,9 @@ action(give(A1,A2,O)) :- actor(A1), actor(A2), object(O).
 -holds(N+1, inBattle(A1,A2)) :- occurs(N, defeat(A1,A2)), state(N).
  holds(N+1, defeated(A1)) :- occurs(N, defeat(A2,A1)), state(N).
 -holds(N+1, captured(A1,A2)) :- occurs(N, save(A3,A2)), state(N), actor(A1).
--holds(N+1, have(A1,O)) :- occurs(N, give(A1,A2,O)), state(N).
- holds(N+1, have(A2,O)) :- occurs(N, give(A1,A2,O)), state(N).
  holds(N+1, saw(A1,defeat(A1,A2))) :- occurs(N, defeat(A1,A2)), state(N).
- holds(N+1, saw(A3,defeat(A1,A2))) :- occurs(N, defeat(A1,A2)), holds(N,actorAt(A3,L)), holds(N,actorAt(A1,L)), state(N).
+ holds(N+1, saw(A3,defeat(A1,A2))) :- occurs(N, defeat(A1,A2)), holds(N,actorAt(A3,L)), 
+                                      holds(N,actorAt(A1,L)), state(N).
 
 
 %===============================================================================
